@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+interface WorkoutSet {
+  exerciseId: string;
+  reps: number;
+  weight: number;
+}
+
+interface CreateWorkoutBody {
+  userId: string;
+  sets: WorkoutSet[];
+}
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as CreateWorkoutBody;
     const { userId, sets } = body;
 
     const workout = await prisma.workout.create({
       data: {
         userId,
         sets: {
-          create: sets.map((set: any) => ({
+          create: sets.map((set) => ({
             exerciseId: set.exerciseId,
             reps: set.reps,
             weight: set.weight,
